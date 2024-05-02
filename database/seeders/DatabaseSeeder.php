@@ -15,7 +15,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         if (App::environment('local')) {
-            $this->call([UserSeeder::class]);
+            $this->call([
+                UserSeeder::class,
+                BookSeeder::class,
+            ]);
         }
     }
 }

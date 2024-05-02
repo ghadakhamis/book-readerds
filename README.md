@@ -47,7 +47,7 @@ d. Generate a new application key
 e. Run the database migrations (Set the database connection in .env before migrating)
 
 ```bash
-  php artisan migrate
+  php artisan migrate --seed
   ```    
 
 f. For local development server
