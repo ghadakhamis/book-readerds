@@ -15,4 +15,9 @@ class Book extends Model
      * @var array<int, string>
      */
     protected $fillable = ['name', 'author', 'pages_count', 'read_pages_count', 'is_read'];
+
+    public function readers()
+    {
+        return $this->hasMany(Reader::class); 
+    }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 #[ObservedBy([ReaderObserver::class])]
 class Reader extends Model
@@ -34,5 +35,20 @@ class Reader extends Model
     public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function scopeBookId(Builder $query, $value): void
+    {
+        $query->where('book_id', $value);
+    }
+
+    public function scopeStartPage(Builder $query, $value): void
+    {
+        $query->where('start_page', $value);
+    }
+
+    public function scopeEndPage(Builder $query, $value): void
+    {
+        $query->where('end_page', $value);
     }
 }
