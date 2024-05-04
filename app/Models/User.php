@@ -22,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
     ];
 
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function generateToken()
     {
         return $this->createToken('auth_token')->plainTextToken;
+    }
+
+    public function readers()
+    {
+        return $this->hasMany(Reader::class); 
     }
 }

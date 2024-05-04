@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
+use App\Models\Reader;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -124,6 +125,22 @@ class ReadBookTest extends TestCase
             ->json('POST', route('books.readers.store', ['book' => $book->id]), $body)
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors(['end_page'], 'errors');
+    }
+
+    public function test_fail_read_book_with_the_same_interval(): void
+    {
+        /** @var User $user */
+        $user     = User::factory()->create();
+        /** @var Book $book */
+        $book     = Book::factory()->create();
+        /** @var Reader $reader */
+        $reader   = Reader::factory()->create(['book_id' => $book->id, 'user_id' => $user->id]);
+        $body     = ['start_page' => $reader->start_page, 'end_page' => $reader->end_page];
+
+        $this->actingAs($user, 'user')
+            ->json('POST', route('books.readers.store', ['book' => $book->id]), $body)
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors(['start_page'], 'errors');
     }
 
     public function test_success_read_book(): void

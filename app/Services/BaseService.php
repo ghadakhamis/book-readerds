@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 abstract class BaseService
 {
     protected $repository;
