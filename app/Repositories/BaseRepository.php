@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Filters\QueryFilters;
 use App\Interfaces\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;   
 
@@ -55,5 +56,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function findBy(string $field, string $value, Array $columns = array('*')): ?Model
     {
         return $this->model->where($field, $value)->first($columns);
+    }
+
+    public function filters(QueryFilters $filters)
+    {
+        return $this->model->filter($filters)->paginate();
     }
 }
