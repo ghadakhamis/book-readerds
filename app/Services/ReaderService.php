@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\CalculateBookReadPages;
 use App\Jobs\SendSMS;
 use App\Models\Book;
 use App\Models\User;
@@ -21,6 +22,7 @@ class ReaderService extends BaseService
         $user            = Auth::user();
         $data['book_id'] = $book->id;
         $this->repository->create($data);
+        CalculateBookReadPages::dispatch($book);
         SendSMS::dispatch($user->phone, trans('messages.readed_message'));
     }
 }
