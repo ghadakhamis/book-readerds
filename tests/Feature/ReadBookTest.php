@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\CalculateBookReadPages;
+use App\Jobs\SendSMS;
 use App\Models\Book;
 use App\Models\Reader;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -145,6 +148,7 @@ class ReadBookTest extends TestCase
 
     public function test_success_read_book(): void
     {
+        Queue::fake();
         /** @var User $user */
         $user     = User::factory()->create();
         /** @var Book $book */
@@ -161,5 +165,8 @@ class ReadBookTest extends TestCase
                 'start_page' => $body['start_page'],
                 'end_page'   => $body['end_page'],
             ]);
+
+        Queue::assertPushed(CalculateBookReadPages::class);
+        Queue::assertPushed(SendSMS::class);
     }
 }
