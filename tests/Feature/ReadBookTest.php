@@ -152,14 +152,20 @@ class ReadBookTest extends TestCase
         /** @var User $user */
         $user     = User::factory()->create();
         /** @var Book $book */
-        $book     = Book::factory()->create();
+        $book     = Book::factory()->create(['read_pages_count' => 0]);
         $body     = ['start_page' => rand(1, 50), 'end_page' => rand(50, 100)];
+
+        $this->assertDatabaseHas(Book::class, [
+            'id'               => $book->id,
+            'read_pages_count' => 0,
+            'is_read'          => false,
+        ]);
 
         $this->actingAs($user, 'user')
             ->json('POST', route('books.readers.store', ['book' => $book->id]), $body)
             ->assertStatus(Response::HTTP_CREATED);
         
-        $this->assertDatabaseHas('readers', [
+        $this->assertDatabaseHas(Reader::class, [
                 'book_id'    => $book->id,
                 'user_id'    => $user->id,
                 'start_page' => $body['start_page'],
@@ -168,5 +174,13 @@ class ReadBookTest extends TestCase
 
         Queue::assertPushed(CalculateBookReadPages::class);
         Queue::assertPushed(SendSMS::class);
+
+        (new CalculateBookReadPages($book))->handle();
+
+        $this->assertDatabaseHas(Book::class, [
+            'id'               => $book->id,
+            'read_pages_count' => $body['end_page'] - $body['start_page'] + 1,
+            'is_read'          => 0,
+        ]);
     }
 }
